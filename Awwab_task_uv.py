@@ -1,4 +1,7 @@
 import earthaccess
+EARTHDATA_USERNAME = "nasaspaceapps1"
+EARTHDATA_PASSWORD = "My_strongPwd#2025"
+
 results = earthaccess.search_datasets(
     keyword="OMUVBd_003"
     )
