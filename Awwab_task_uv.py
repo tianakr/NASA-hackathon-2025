@@ -28,7 +28,8 @@ print("End of day:", end)
 results = earthaccess.search_datasets(
     keyword = "OMUVBd_003",
     bounding_box = (-10, 20, 10, 50),
-    temporal = ("2018-02", "2018-03")
+    temporal = ("2018-02-01", "2018-02-01"),
+    count = 1
     )
 
 print(results)
