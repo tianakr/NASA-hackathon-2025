@@ -1,3 +1,3 @@
 hello
 world
-https://prod.liveshare.vsengsaas.visualstudio.com/join?EC0C91567EAF7C9DFF92B615050298E318A8
+https://prod.liveshare.vsengsaas.visualstudio.com/join?940F96F7AFBA1A2B7BE1EEDF6D9434449729
