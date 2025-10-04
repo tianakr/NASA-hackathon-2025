@@ -13,8 +13,14 @@ def menu():
             """)
 
 def location():
-    
+    city_location = input("Enter the city name")   #Decide later which one
+    print(f"City is set to {city_location}")
+    return city_location
+
 def date():
+    date = input("Enter the date (YYY-MM-DD) :")
+    print(f"Date set to :{date}")
+    return date
 
 def extreme_temp(date, location):
 
