@@ -1,74 +1,61 @@
 import earthaccess
 from datetime import datetime
-import h5py
-import numpy as np
+import xarray as xr
 
-# -----------------------------
-# 1️⃣ NASA Earthdata credentials
-# -----------------------------
+# NASA Earthdata login
 EARTHDATA_USERNAME = "nasaspaceapps1"
 EARTHDATA_PASSWORD = "My_strongPwd#2025"
 
-# -----------------------------
-# 2️⃣ Function to get start and end of day
-# -----------------------------
 def get_start_end_of_day(user_input):
+    """
+    Takes a datetime string and returns the start and end of that day.
+
+    Args:
+        user_input (str): Date/time in format "YYYY-MM-DD HH:MM"
+
+    Returns:
+        tuple: (start_of_day, end_of_day)
+    """
     dt = datetime.strptime(user_input, "%Y-%m-%d %H:%M")
     start_of_day = dt.replace(hour=0, minute=0, second=0)
     end_of_day = dt.replace(hour=23, minute=59, second=59)
     return start_of_day, end_of_day
 
-# -----------------------------
-# 3️⃣ Example date input
-# -----------------------------
-user_input = "2025-10-04 14:30"
-start, end = get_start_end_of_day(user_input)
-
+# Example date
+start, end = get_start_end_of_day("2025-10-04 14:30")
 print("Start of day:", start)
 print("End of day:", end)
 
-# -----------------------------
-# 4️⃣ Log in to NASA Earthdata
-# -----------------------------
-auth = earthaccess.login(username=EARTHDATA_USERNAME, password=EARTHDATA_PASSWORD)
-
-# -----------------------------
-# 5️⃣ Search for the UV dataset granules
-# -----------------------------
-results = earthaccess.search_data(
-    short_name="OMUVBd_003",                          # UV dataset
-    bounding_box=(10, 55, 20, 70),                   # Sweden region example
-    temporal=(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")),  # Use start/end
-    count=1                                           # Just 1 file
+# Corrected search_datasets call
+results = earthaccess.search_datasets(
+    keyword="OMUVBd_003",
+    bounding_box=(-10, 20, 10, 50),
+    temporal=("1999-02-01", "2019-03-31")
 )
 
-print(f"Number of granules found: {len(results)}")
+# Check datasets found
+print(f"Found {len(results['hits'])} datasets")
 
-# -----------------------------
-# 6️⃣ Download the UV file
-# -----------------------------
-earthaccess.download(results, "./uv_data")
-print("Download complete!")
+# Pick the first dataset
+dataset_id = results['hits'][0]['id']
 
-# -----------------------------
-# 7️⃣ Read UV index value from the file
-# -----------------------------
-# Get the downloaded file name
-file_name = results[0]["download_url"].split("/")[-1]
-file_path = "./uv_data/" + file_name
+# List files in this dataset
+files = earthaccess.list_files(dataset_id)
+print(f"Files available: {len(files['items'])}")
 
-# Example location (Stockholm)
-lat, lon = 59.33, 18.06
+# Download the first file
+file_info = files['items'][0]
+local_file = earthaccess.download_file(file_info['id'], ".", EARTHDATA_USERNAME, EARTHDATA_PASSWORD)
 
-with h5py.File(file_path, "r") as f:
-    uv_data = f['EGEN_UV_INDEX'][:]
-    lat_data = f['Latitude'][:]
-    lon_data = f['Longitude'][:]
+# Open with xarray
+ds = xr.open_dataset(local_file)
+print(ds)  # shows all variables
 
-    # Find nearest grid point
-    lat_idx = (np.abs(lat_data - lat)).argmin()
-    lon_idx = (np.abs(lon_data - lon)).argmin()
+# Extract UV index variable (usually named 'UV_index')
+uv_index = ds['UV_index']
 
-    uv_index = uv_data[lat_idx, lon_idx]
+# Subset by bounding box
+uv_region = uv_index.sel(lat=slice(20,50), lon=slice(-10,10))
 
-print(f"UV Index on {user_input} at ({lat}, {lon}): {uv_index}")
+# Example: print UV index for the first time in the file
+print("UV Index values for the region:", uv_region.isel(time=0).values)
