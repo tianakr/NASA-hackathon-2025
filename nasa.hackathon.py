@@ -1,5 +1,6 @@
 import time
 import os
+import earthaccess
 
 def menu():
     return ("""Welcome to will it rain on my parade!
