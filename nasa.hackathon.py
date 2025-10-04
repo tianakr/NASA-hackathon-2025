@@ -36,8 +36,7 @@ def date():
   
 
 #<<<<<<< HEAD
-def extreme_temp(date, location):
-    pass
+
 #=======
 def extreme_temp(date, location, avg_temp):
     if avg_temp >= 35:
