@@ -1,3 +1,3 @@
 print(aushduha)
 pullllll
-hı
+hıkcjdkjckdsjn
