@@ -1,4 +1,5 @@
 import earthaccess
+from datetime import datetime
 EARTHDATA_USERNAME = "nasaspaceapps1"
 EARTHDATA_PASSWORD = "My_strongPwd#2025"
 
@@ -26,9 +27,13 @@ print("End of day:", end)
 
 results = earthaccess.search_datasets(
     keyword="OMUVBd_003"
+    bounding_box = (-10, 20, 10, 50),
+    temporal = ("1999-02", "2019-03")
     )
 
-from datetime import datetime
+print(results)
+
+
 
 
 
