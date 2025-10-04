@@ -32,7 +32,19 @@ def date():
     return date
   
 
-def extreme_temp(date, location):
+def extreme_conditions(date, location avg_temg, wind, percipitation):
+    if avg_temp >= 35:
+        return (f"Its very hot! ☀️ The average temp at {location} is {avg_temp}°C.")
+    
+    elif avg_temp <= -5:
+        return (f"Its very hot! 🥶 The average temp at {location} is {avg_temp}°C.")
+    
+    elif wind >= 8:
+        return (f"Its very windy! 💨 The average wind speed at {location} is {wind}m/s.")
+    
+    elif percipitation >= 10:
+        return (f"Its very wet! 🌧️ The average rainfall at {location} is {percipitation}")
+    
 
 def precipitation_probability(date, location):
     probability_precipitation = (n/t) * 100 #just a formula, will change it later
