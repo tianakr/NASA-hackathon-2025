@@ -13,14 +13,24 @@ def menu():
             """)
 
 def location():
-    city_location = input("Enter the city name")   #Decide later which one
-    print(f"City is set to {city_location}")
-    return city_location
+    lat = float(input("Enter latitude (e.g., 34.05): "))   #Decide later which one
+    lon = float(input("Enter longitude (e.g., -118.25): "))
+    if -90 <= lat <= 90 and -180 <= lon <= 180:
+        print(f"Location set to: Latitude {lat}, Longitude {lon}")
+    else:
+        print("Warning: Latitude must be -90 to 90 and Longitude must be -180 to 180!")
+
+    return (lat, lon)
+
 
 def date():
     date = input("Enter the date (YYY-MM-DD) :")
-    print(f"Date set to :{date}")
+    if len(date) == 10 and date[4] == '-' and date[7] == '-':
+        print(f"Date set to: {date}")
+    else:
+        print("Warning: Date should be in YYYY-MM-DD format!")
     return date
+  
 
 def extreme_temp(date, location):
 
