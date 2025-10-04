@@ -1,2 +1,3 @@
 print(aushduha)
 pullllll
+hı
