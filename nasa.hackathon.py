@@ -1,3 +1,4 @@
 print(aushduha)
-pullllll
-hıkcjdkjckdsjn
+hdhdhdhdhdd
+helloooooo
+kcjdkjckdsjn
