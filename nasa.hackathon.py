@@ -38,6 +38,8 @@ def extreme_temp(date, location, avg_temp):
     
     elif avg_temp <= -5:
         return (f"Its very hot! 🥶 The average temp at {location} is {avg_temp}°C.")
+    else:
+        return (f"The conditions at {location} are normal, the temp is {avg_temp}°C.")
     
     
 
@@ -63,7 +65,7 @@ if choose_option == "1":
 elif choose_option == "2":
     date = date()
 elif choose_option == "3":
-    extreme_temp(date, location, avg_temp)
+    print(extreme_temp(date, location, avg_temp))
 elif choose_option == "4":
     precipitation_probability(date, location)
 elif choose_option == "5":
