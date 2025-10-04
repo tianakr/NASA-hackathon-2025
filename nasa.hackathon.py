@@ -5,7 +5,7 @@ def menu():
     return ("""Welcome to will it rain on my parade!
             1. Location
             2. Date
-            3. Extreme temperatures
+            3. Extreme temp
             4. Precipitation probability
             5. UV index
             6. Wind
@@ -32,18 +32,13 @@ def date():
     return date
   
 
-def extreme_conditions(date, location avg_temg, wind, percipitation):
+def extreme_temp(date, location, avg_temp):
     if avg_temp >= 35:
         return (f"Its very hot! ☀️ The average temp at {location} is {avg_temp}°C.")
     
     elif avg_temp <= -5:
         return (f"Its very hot! 🥶 The average temp at {location} is {avg_temp}°C.")
     
-    elif wind >= 8:
-        return (f"Its very windy! 💨 The average wind speed at {location} is {wind}m/s.")
-    
-    elif percipitation >= 10:
-        return (f"Its very wet! 🌧️ The average rainfall at {location} is {percipitation}")
     
 
 def precipitation_probability(date, location):
@@ -68,7 +63,7 @@ if choose_option == "1":
 elif choose_option == "2":
     date = date()
 elif choose_option == "3":
-    extreme_temp(date, location)
+    extreme_temp(date, location, avg_temp)
 elif choose_option == "4":
     precipitation_probability(date, location)
 elif choose_option == "5":
