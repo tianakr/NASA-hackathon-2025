@@ -1,11 +1,12 @@
 import time
 import os
 
+
 def menu():
     return ("""Welcome to will it rain on my parade!
             1. Location
             2. Date
-            3. Extreme temperatures
+            3. Extreme temp
             4. Precipitation probability
             5. UV index
             6. Wind
@@ -13,17 +14,39 @@ def menu():
             """)
 
 def location():
-    city_location = input("Enter the city name")   #Decide later which one
-    print(f"City is set to {city_location}")
-    return city_location
+    lat = float(input("Enter latitude (e.g., 34.05): "))   #Decide later which one
+    lon = float(input("Enter longitude (e.g., -118.25): "))
+    if -90 <= lat <= 90 and -180 <= lon <= 180:
+        print(f"Location set to: Latitude {lat}, Longitude {lon}")
+    else:
+        print("Warning: Latitude must be -90 to 90 and Longitude must be -180 to 180!")
+
+    return (lat, lon)
+
 
 def date():
     date = input("Enter the date (YYY-MM-DD) :")
-    print(f"Date set to :{date}")
+    if len(date) == 10 and date[4] == '-' and date[7] == '-':
+        print(f"Date set to: {date}")
+    else:
+        print("Warning: Date should be in YYYY-MM-DD format!")
     return date
+  
 
+#<<<<<<< HEAD
 def extreme_temp(date, location):
     pass
+#=======
+def extreme_temp(date, location, avg_temp):
+    if avg_temp >= 35:
+        return (f"Its very hot! ☀️ The average temp at {location} is {avg_temp}°C.")
+    
+    elif avg_temp <= -5:
+        return (f"Its very hot! 🥶 The average temp at {location} is {avg_temp}°C.")
+    
+    
+
+#>>>>>>> b506a3cac7370cc8f86d18e6904606d217346444
 def precipitation_probability(date, location):
     probability_precipitation = (n/t) * 100 #just a formula, will change it later
     return probability_precipitation
@@ -79,6 +102,7 @@ def calculate_wind():
     print(f"Beaufort Number: {beaufort_number}")
     print(f"Description: {description}")
 
+    return (wind_speed_ms, wind_speed_mph)
 
 def exit():
     return ("Thank you for using, will it rain on my parade!")
@@ -96,7 +120,7 @@ if choose_option == "1":
 elif choose_option == "2":
     date = date()
 elif choose_option == "3":
-    extreme_temp(date, location)
+    extreme_temp(date, location, avg_temp)
 elif choose_option == "4":
     precipitation_probability(date, location)
 elif choose_option == "5":
