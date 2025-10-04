@@ -1,2 +1,2 @@
 print(aushduha)
-hdhdhdhdhdd
+pullllll
