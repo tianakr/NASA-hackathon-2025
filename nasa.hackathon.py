@@ -33,7 +33,7 @@ choose_option = ""
 
 while choose_option != "7":
     print(menu())
-    choose_option = input("Choose your option (1-6): ")
+    choose_option = input("Choose your option (1-7): ")
 
 if choose_option == "1":
     location = location()
@@ -47,7 +47,7 @@ elif choose_option == "5":
     uv_index()
 elif choose_option == "6":
     precipitation_probability()   
-elif choose_option == "6":
+elif choose_option == "7":
     print(exit())
 else:
     print("Invalid choice. Try again!")
