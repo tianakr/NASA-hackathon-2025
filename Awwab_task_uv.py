@@ -1,4 +1,7 @@
 import earthaccess
+results = earthaccess.search_datasets(
+    keyword="OMUVBd_003"
+    )
 
 from datetime import datetime
 
