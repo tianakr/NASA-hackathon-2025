@@ -29,14 +29,14 @@ def date():
     date = input("Enter the date (YYY-MM-DD) :")
     if len(date) == 10 and date[4] == '-' and date[7] == '-':
         print(f"Date set to: {date}")
+        return date
     else:
         print("Warning: Date should be in YYYY-MM-DD format!")
-    return date
+
   
 
 #<<<<<<< HEAD
-def extreme_temp(date, location):
-    pass
+
 #=======
 def extreme_temp(date, location, avg_temp):
     if avg_temp >= 35:
