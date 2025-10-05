@@ -42,8 +42,9 @@ def get_data_hourly(lat, lon, start_date, end_date, time, quantity):
             list_values.append(value)
     return list_values
 
-uv_values = get_data_hourly(user_lat, user_lon, start_date, end_date, target_time, "ALLSKY_SFC_UV_INDEX")
-cloud_cover_values = get_data_daily(user_lat, user_lon, start_date, end_date, "CLOUD_OD")
-plt.plot(uv_values)
-
-plt.show()
+wind_speed_list = get_data_hourly(user_lat, user_lon, start_date, end_date, target_time, "WS2M")
+#uv_values = get_data_hourly(user_lat, user_lon, start_date, end_date, target_time, "ALLSKY_SFC_UV_INDEX")
+#cloud_cover_values = get_data_daily(user_lat, user_lon, start_date, end_date, "CLOUD_OD")
+#plt.plot(uv_values)
+print(wind_speed_list)
+#plt.show()
