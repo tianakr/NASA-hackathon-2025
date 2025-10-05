@@ -58,52 +58,71 @@ def get_data_hourly(lat, lon, start_date, end_date, time, quantity):
             list_values.append(value)
     return list_values
 
-def forecast_quantity(start_date, end_date, target_date, values_list):
-    print(values_list)
+def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
 
-    dates = pd.date_range(start=start_date, end=end_date)
-    df = pd.DataFrame({
-        "ds": dates,
-        "y": values_list
-    })
+    # Create date range
+    dates = pd.date_range(start=start_date, end=end_date, freq='D')
 
-    df = df[df["y"] != -999] #remove any values = -999
-    
-    model = Prophet()
+    # Ensure same length between dates and values
+    if len(dates) != len(values_list):
+        min_len = min(len(dates), len(values_list))
+        dates = dates[:min_len]
+        values_list = values_list[:min_len]
+
+    # Remove invalid (-999) data while keeping matching dates
+    valid_data = [(d, v) for d, v in zip(dates, values_list) if v != -999]
+    if not valid_data:
+        raise ValueError("No valid data available after removing -999 entries!")
+
+    valid_dates, valid_values = zip(*valid_data)
+
+    # Create DataFrame
+    df = pd.DataFrame({"ds": valid_dates, "y": valid_values})
+
+    # Train Prophet model
+    model = Prophet(daily_seasonality=True)
     model.fit(df)
 
+    # Generate future dataframe up to target date
     future = pd.date_range(start=df["ds"].max() + pd.Timedelta(days=1),
-                       end=target_date,
-                       freq="D")
+                           end=target_date,
+                           freq="D")
     future_df = pd.DataFrame({"ds": future})
 
-    # Predict the UV for the next day (or any specific date)
-
+    # Make predictions
     forecast = model.predict(future_df)
-    predicted_value = forecast.loc[forecast["ds"] == target_date, "yhat"].values[0]
-    print(f"\nPredicted UV index for {target_date.date()}: {predicted_value:.2f}")
 
-    model.plot(forecast)
-    plt.title("UV Index Forecast with NASA Data")
-    plt.xlabel("Date")
-    plt.ylabel("UV Index")
-    plt.show()
+    # Get predicted value for target date (last forecasted day)
+    predicted_value = forecast.iloc[-1]["yhat"]
+    print(f"\nPredicted {quantity} for {target_date.date()}: {predicted_value:.2f}")
 
-    forecast_dict = {"mean" : forecast["yhat"], "lower" : forecast["yhat_lower"], "upper" : forecast["yhat_upper"]}
+    # Visualization
+    #model.plot(forecast)
+    #plt.title("UV Index Forecast with NASA Data")
+    #plt.xlabel("Date")
+    #plt.ylabel("UV Index")
+    #plt.show()
+
+    forecast_dict = {
+        "mean": forecast["yhat"].tolist(),
+        "lower": forecast["yhat_lower"].tolist(),
+        "upper": forecast["yhat_upper"].tolist()
+    }
+
     return forecast_dict
 
 def find_probability_range(dict_norm_dist, lower, upper):
     upper_limit = float(upper)
     lower_limit = float(lower)
-    mu = float(dict_norm_dist["mean"].iloc[0])
-    sigma = float(((dict_norm_dist["upper"] - dict_norm_dist["lower"]) / 3.92).iloc[0])
+    mu = float(dict_norm_dist["mean"][0])
+    sigma = (dict_norm_dist["upper"][0] - dict_norm_dist["lower"][0]) / 3.92
     
     probability = (norm.cdf(upper_limit, mu, sigma) - norm.cdf(lower_limit, mu, sigma)) * 100
     print(f"probability is: {probability:.2f}%")
     
     return probability
 
-def precipitation_probability(coordinates, date):
+def precipitation_probability(coordinates, date, quantity="PRECTOTCORR"):
     user_msg = """Pick an option:
         1. No Rain
         2. Light Rain
@@ -141,11 +160,11 @@ def precipitation_probability(coordinates, date):
         case _:
                 print("Choice Invalid!")
     
-    precipitation_values = get_data_daily(lat, lon, start_date, end_date, "PRECTOTCORR")
-    precipitation_forecast_dict = forecast_quantity(start_date, end_date, target_date, precipitation_values)
+    precipitation_values = get_data_daily(lat, lon, start_date, end_date, quantity)
+    precipitation_forecast_dict = forecast_quantity(start_date, end_date, target_date, precipitation_values, quantity)
     find_probability_range(precipitation_forecast_dict, lower, upper)
 
-def uv_probability(coordinates, date):
+def uv_probability(coordinates, date, quantity="ALLSKY_SFC_UV_INDEX"):
     user_msg = """Pick an option to check probability:
         1. Low
         2. Moderate
@@ -185,11 +204,11 @@ def uv_probability(coordinates, date):
         case _:
                 print("Choice Invalid!")
 
-    uv_values = get_data_hourly(lat, lon, start_date, end_date, target_time, "ALLSKY_SFC_UV_INDEX")
-    uv_forecast_dict = forecast_quantity(start_date, end_date, target_date, uv_values)
+    uv_values = get_data_hourly(lat, lon, start_date, end_date, target_time, quantity)
+    uv_forecast_dict = forecast_quantity(start_date, end_date, target_date, uv_values, quantity)
     find_probability_range(uv_forecast_dict, lower, upper)
 
-def wind_probability(coordinates, date):
+def wind_probability(coordinates, date, quantity="WS2M"):
     user_msg = """Pick an option to check probability:
         1. Calm
         2. Moderate
@@ -228,11 +247,11 @@ def wind_probability(coordinates, date):
         case _:
                 print("Choice Invalid!")
 
-    uv_values = get_data_hourly(lat, lon, start_date, end_date, target_time, "ALLSKY_SFC_UV_INDEX")
-    uv_forecast_dict = forecast_quantity(start_date, end_date, target_date, uv_values)
+    uv_values = get_data_hourly(lat, lon, start_date, end_date, target_time, quantity)
+    uv_forecast_dict = forecast_quantity(start_date, end_date, target_date, uv_values, quantity)
     find_probability_range(uv_forecast_dict, lower, upper)
 
-def temp_probability(coordinates, date):
+def temp_probability(coordinates, date, quantity="T2M"):
     user_msg = """Pick an option to check probability:
         1. Extreme Cold
         2. Cold
@@ -275,8 +294,8 @@ def temp_probability(coordinates, date):
         case _:
                 print("Choice Invalid!")
 
-    temp_values = get_data_hourly(lat, lon, start_date, end_date, target_time, "T2M")
-    temp_forecast_dict = forecast_quantity(start_date, end_date, target_date, temp_values)
+    temp_values = get_data_hourly(lat, lon, start_date, end_date, target_time, quantity)
+    temp_forecast_dict = forecast_quantity(start_date, end_date, target_date, temp_values, quantity)
     find_probability_range(temp_forecast_dict, lower, upper)
 
 def main():
