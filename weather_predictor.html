@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>WILL IT RAIN ON MY PARADE?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Flatpickr (English datepicker) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<style>
+  :root{
+    --pad:16px; --radius:16px;
+    --ink:#eef4ff; --muted:#a7b9e6;
+    --primary:#7cf3ff; --accent:#8bff9f; --warn:#ffd166; --bad:#ff8a80; --ok:#a7ffeb;
+    --glass: rgba(10,16,36,.78);
+  }
+
+  /* ---------- THEMES ---------- */
+  body{
+    margin:0; color:var(--ink);
+    font-family: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:
+      linear-gradient(180deg, rgba(6,10,24,.65), rgba(6,10,24,.85)),
+      url("https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1600&auto=format&fit=crop") center/cover fixed no-repeat; /* Storm default */
+    min-height:100vh;
+    transition: background .5s ease, color .3s ease;
+  }
+  /* SUNNY */
+  body[data-theme="sunny"]{
+    --primary:#ffd166; --accent:#ff9f1c;
+    background:
+      linear-gradient(180deg, rgba(255,188,66,.35), rgba(255,188,66,.15)),
+      url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop") center/cover fixed no-repeat;
+  }
+  /* SNOWY */
+  body[data-theme="snowy"]{
+    --primary:#a7e0ff; --accent:#e0f7ff;
+    background:
+      linear-gradient(180deg, rgba(120,170,255,.25), rgba(10,16,36,.85)),
+      url("https://images.unsplash.com/photo-1516569422545-d9dbd0f4ba49?q=80&w=1600&auto=format&fit=crop") center/cover fixed no-repeat;
+  }
+  /* STORM */
+  body[data-theme="storm"]{
+    --primary:#7cf3ff; --accent:#8bff9f;
+    background:
+      linear-gradient(180deg, rgba(6,10,24,.65), rgba(6,10,24,.85)),
+      url("https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1600&auto=format&fit=crop") center/cover fixed no-repeat;
+  }
+  /* RADAR (pure CSS background) */
+  body[data-theme="radar"]{
+    --primary:#19ff99; --accent:#00ffc6;
+    background:
+      radial-gradient(80% 80% at 50% 50%, rgba(0,255,153,.12), rgba(0,0,0,.85) 60%),
+      repeating-conic-gradient(from 0deg, rgba(0,255,153,.08) 0deg 8deg, rgba(0,0,0,.8) 8deg 16deg),
+      #030b08;
+    background-attachment: fixed,fixed,fixed;
+  }
+
+  header{ padding:44px 16px 22px; text-align:center; }
+  .brand{display:inline-flex; align-items:center; gap:14px}
+  h1{
+    margin:0; font-size:clamp(28px,4.5vw,48px); letter-spacing:.6px;
+    color:var(--primary);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--primary) 60%, transparent),
+                 0 0 28px color-mix(in srgb, var(--accent) 25%, transparent);
+    position:relative; display:inline-block;
+  }
+  /* animated underline */
+  h1::after{
+    content:""; position:absolute; left:10%; right:10%; bottom:-10px; height:3px;
+    background:linear-gradient(90deg, var(--primary), var(--accent));
+    box-shadow:0 0 16px color-mix(in srgb, var(--primary) 60%, transparent);
+    animation: slide 3s ease-in-out infinite alternate;
+  }
+  @keyframes slide{ from{left:10%; right:40%} to{left:40%; right:10%} }
+  .sub{ color:var(--muted); margin-top:12px; font-weight:600 }
+
+  /* Theme bar */
+  .themebar{
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap;
+    margin:14px auto 0; padding:8px;
+  }
+  .themebtn{
+    padding:8px 12px; border-radius:999px; font-weight:800; letter-spacing:.2px;
+    border:1px solid rgba(140,180,255,.35);
+    color:#eaf1fb; cursor:pointer; background:rgba(15,32,79,.35);
+    box-shadow: 0 0 0 rgba(124,243,255,0); transition:all .2s ease;
+  }
+  .themebtn:hover{ box-shadow:0 6px 18px rgba(124,243,255,.15); transform: translateY(-1px); }
+  .themebtn.active{ outline:2px solid var(--primary); background:linear-gradient(90deg, rgba(124,243,255,.18), rgba(139,255,159,.18)); }
+
+  /* Radar icon */
+  .radar{ width:min(64px,10vw); height:min(64px,10vw); filter: drop-shadow(0 0 8px rgba(124,243,255,.35)); }
+  .ring{ fill:none; stroke:rgba(124,243,255,.35); stroke-width:1 }
+  .grid{ stroke:rgba(124,243,255,.18); stroke-width:1 }
+  .beam{ fill:url(#beamGrad) }
+  .blip{ fill:var(--primary); }
+  .sweep{ transform-origin:50% 50%; animation:sweep 4s linear infinite; }
+  .blip{ animation:ping 2s ease-in-out infinite; }
+  .blip:nth-of-type(2){ animation-delay:.4s }
+  .blip:nth-of-type(3){ animation-delay:.9s }
+  @keyframes sweep { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  @keyframes ping { 0%{opacity:0; r:1} 50%{opacity:1; r:2.4} 100%{opacity:0; r:1} }
+  @media (prefers-reduced-motion: reduce){ .sweep,h1::after,.blip{ animation:none } }
+
+  main{ max-width:980px; margin:0 auto; padding:0 16px 40px; }
+  .card{
+    background: var(--glass);
+    border:1px solid rgba(120,170,255,.25);
+    border-radius: var(--radius);
+    padding: var(--pad);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    margin-bottom:16px;
+  }
+  label{display:block; font-weight:700; margin:8px 0 6px; color:#cfe4ff;}
+  input[type="text"], input[type="time"]{
+    width:100%; padding:12px; border-radius:12px;
+    border:1px solid rgba(140,180,255,.35);
+    background:#0e1738; color:#eef4ff; outline:none;
+    box-shadow: inset 0 0 12px rgba(124,243,255,.08);
+  }
+  input::placeholder{color:#9bb2e2;}
+  .row{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px}
+  @media (max-width:920px){ .row{grid-template-columns:1fr 1fr} }
+  @media (max-width:640px){ .row{grid-template-columns:1fr} }
+
+  /* Glow gradient buttons */
+  .btn{
+    padding:10px 14px; border-radius:12px;
+    border:1px solid rgba(140,180,255,.35);
+    background: linear-gradient(135deg, rgba(15,32,79,.9), rgba(10,22,54,.95));
+    color:#eaf1fb; cursor:pointer; font-weight:800; letter-spacing:.3px;
+    box-shadow: 0 0 0 rgba(124,243,255,0);
+    position:relative; overflow:hidden;
+    transition: transform .06s ease, filter .15s ease, box-shadow .3s ease;
+  }
+  .btn::before{
+    content:""; position:absolute; inset:-2px;
+    background: conic-gradient(from 180deg, #7cf3ff, #8bff9f, #ffd166, #7cf3ff);
+    filter: blur(10px); opacity:.35; z-index:0;
+    transition: opacity .2s ease;
+  }
+  .btn span{ position:relative; z-index:1 }
+  .btn:hover{ filter:brightness(1.12) saturate(1.06); box-shadow: 0 8px 28px rgba(124,243,255,.18); }
+  .btn:active{ transform: translateY(1px) scale(.995); }
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+  .menu{display:grid; gap:8px; margin-top:8px}
+  .menu button{text-align:left}
+  .titleline{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .pill{
+    padding:4px 10px; background:#0f1836;
+    border:1px solid rgba(120,170,255,.35); border-radius:999px; font-size:12px;
+    color:#cfe4ff; display:flex; align-items:center; gap:8px;
+  }
+  .tag{
+    padding:4px 10px; border-radius:999px; font-size:12px;
+    background:linear-gradient(90deg, rgba(124,243,255,.15), rgba(139,255,159,.15));
+    border:1px solid rgba(140,180,255,.35); color:#dff7ff;
+  }
+  .spinner{
+    width:14px; height:14px; border-radius:50%;
+    border:2px solid rgba(124,243,255,.25); border-top-color:var(--primary);
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .result{
+    white-space:pre-wrap;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background:#0a112a;
+    border:1px solid rgba(140,180,255,.3);
+    border-radius:12px; padding:16px;
+    box-shadow: inset 0 0 20px rgba(124,243,255,.08);
+  }
+  .emoji{font-size:20px; margin-right:6px}
+  .stat{display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px; margin:6px 0;}
+  .bar{height:10px; background:#16224b; border-radius:999px; overflow:hidden; box-shadow: inset 0 0 10px rgba(124,243,255,.15);}
+  .bar > div{height:100%; width:0%; transition:width .5s ease; background: linear-gradient(90deg, #7cf3ff, #8bff9f);}
+  .badge{font-weight:700}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+</style>
+</head>
+<body data-theme="storm">
+  <header>
+    <div class="brand" aria-label="Animated radar icon and title">
+      <!-- Animated radar SVG -->
+      <svg class="radar" viewBox="0 0 100 100" role="img" aria-label="radar">
+        <defs>
+          <linearGradient id="beamGrad" x1="0" x2="1">
+            <stop offset="0%" stop-color="rgba(124,243,255,0.35)"/>
+            <stop offset="100%" stop-color="rgba(124,243,255,0.02)"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring" cx="50" cy="50" r="45"/>
+        <circle class="ring" cx="50" cy="50" r="30"/>
+        <circle class="ring" cx="50" cy="50" r="15"/>
+        <line class="grid" x1="50" y1="5" x2="50" y2="95"/>
+        <line class="grid" x1="5" y1="50" x2="95" y2="50"/>
+        <g class="sweep">
+          <path class="beam" d="M50,50 L50,5 A45,45 0 0,1 94.5,50 Z"/>
+        </g>
+        <circle class="blip" cx="72" cy="34" r="2"/>
+        <circle class="blip" cx="28" cy="60" r="2"/>
+        <circle class="blip" cx="64" cy="70" r="2"/>
+      </svg>
+
+      <h1>WILL IT RAIN ON MY PARADE?</h1>
+    </div>
+    <div class="sub">Climatological odds from NASA POWER (1984 → today), ±14-day window</div>
+
+    <!-- THEME SWITCHER -->
+    <div class="themebar" role="group" aria-label="Themes">
+      <button class="themebtn active" data-theme="storm">⛈️ Storm</button>
+      <button class="themebtn" data-theme="sunny">☀️ Sunny</button>
+      <button class="themebtn" data-theme="snowy">❄️ Snowy</button>
+      <button class="themebtn" data-theme="radar">📡 Radar</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- STEP 1: Location + Date + Hour -->
+    <section class="card" id="setup">
+      <div class="titleline">
+        <strong>Setup</strong>
+        <span class="pill small" id="status"><span class="spinner"></span> Waiting for inputs…</span>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label for="place">Location</label>
+          <input id="place" type="text" placeholder="e.g., Gothenburg, Sweden" />
+        </div>
+        <div>
+          <label for="date">Date</label>
+          <!-- Text input that Flatpickr turns into an English calendar -->
+          <input id="date" type="text" placeholder="YYYY-MM-DD" />
+        </div>
+        <div>
+          <label for="time">Hour <span class="small muted">(used for UV)</span></label>
+          <input id="time" type="time" value="13:00" />
+        </div>
+      </div>
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center">
+        <button class="btn" id="continue"><span>Continue</span></button>
+        <span class="muted small">Enter a city, pick a date, and (optionally) set the hour for UV.</span>
+      </div>
+    </section>
+
+    <!-- STEP 2: Menu -->
+    <section class="card" id="menuCard" style="display:none">
+      <div class="titleline">
+        <strong>Choose what to do</strong>
+        <div style="display:flex; gap:6px; flex-wrap:wrap">
+          <span class="tag" id="meta"></span>
+          <span class="tag" id="hourTag"></span>
+        </div>
+      </div>
+      <div class="menu" style="margin-top:8px">
+        <button class="btn" id="m1"><span>1-Coordinates</span></button>
+        <button class="btn" id="m2"><span>2-Extreme Temperature</span></button>
+        <button class="btn" id="m3"><span>3-Precipitation Probability</span></button>
+        <button class="btn" id="m4"><span>4-UV Index</span></button>
+        <button class="btn" id="m5"><span>5-Wind Speed</span></button>
+        <button class="btn" id="m6"><span>6-Exit</span></button>
+      </div>
+    </section>
+
+    <!-- OUTPUT -->
+    <section class="card" id="output" style="display:none">
+      <div class="titleline">
+        <strong>Result</strong>
+        <span class="pill small" id="apiTag"></span>
+      </div>
+      <div id="out" class="result" style="margin-top:8px"></div>
+    </section>
+  </main>
+
+<script>
+/* ---------- Init English calendar (Flatpickr) ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  flatpickr('#date', {
+    dateFormat: 'Y-m-d',        // value: 2025-10-24
+    altInput: true,             // pretty display
+    altFormat: 'F j, Y',        // display: October 24, 2025 (English)
+    allowInput: true,
+    disableMobile: true         // force desktop calendar on mobile too
+    // locale defaults to English
+  });
+
+  // Restore theme from localStorage
+  const saved = localStorage.getItem('theme');
+  if (saved) setTheme(saved);
+});
+
+/* ---------- Theme switcher ---------- */
+const themeButtons = document.querySelectorAll('.themebtn');
+function setTheme(name){
+  document.body.setAttribute('data-theme', name);
+  themeButtons.forEach(b => b.classList.toggle('active', b.dataset.theme === name));
+  localStorage.setItem('theme', name);
+}
+themeButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=> setTheme(btn.dataset.theme));
+});
+
+/* ---------- Helpers ---------- */
+const statusEl = document.getElementById('status');
+const outBox   = document.getElementById('out');
+const output   = document.getElementById('output');
+const apiTag   = document.getElementById('apiTag');
+const metaTag  = document.getElementById('meta');
+const hourTag  = document.getElementById('hourTag');
+
+const todayYMD = () => {
+  const d = new Date(); const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth()+1).padStart(2,'0');
+  const day = String(d.getUTCDate()).padStart(2,'0');
+  return `${y}${m}${day}`;
+};
+const doy = (d) => {
+  const y = d.getUTCFullYear();
+  const start = Date.UTC(y,0,1);
+  const n = Math.floor((Date.UTC(y, d.getUTCMonth(), d.getUTCDate()) - start)/86400000)+1;
+  if (d.getUTCMonth()===1 && d.getUTCDate()===29) return 59;
+  return n;
+};
+function inWindow(dn, center, w=14){
+  const low = center - w, high = center + w;
+  if (low < 1) return dn <= high || dn >= 365 + low;
+  if (high > 365) return dn >= low || dn <= (high - 365);
+  return dn >= low && dn <= high;
+}
+function toDateYMD(yyyymmdd){
+  const y = +yyyymmdd.slice(0,4), m=+yyyymmdd.slice(4,6)-1, d=+yyyymmdd.slice(6,8);
+  return new Date(Date.UTC(y,m,d));
+}
+
+/* Geocoding (Open-Meteo; no key) */
+async function geocode(place){
+  const url = `https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name=${encodeURIComponent(place)}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('Geocoding failed.');
+  const j = await r.json();
+  if (!j.results || !j.results.length) throw new Error('Place not found.');
+  const g = j.results[0];
+  return { lat: g.latitude, lon: g.longitude, label: `${g.name}${g.country?`, ${g.country}`:''}` };
+}
+
+/* NASA POWER (daily, 1984→today) */
+async function fetchPowerDaily(lat, lon){
+  const start = '19840101';
+  const end = todayYMD();
+  const params = ['PRECTOTCORR','T2M','T2M_MAX','T2M_MIN','WS10M','ALLSKY_SFC_UV_INDEX'].join(',');
+  const url = `https://power.larc.nasa.gov/api/temporal/daily/point?start=${start}&end=${end}&latitude=${lat}&longitude=${lon}&community=RE&parameters=${params}&format=JSON`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('POWER daily fetch failed.');
+  const j = await r.json();
+  return { data: j.properties.parameter, api: url };
+}
+
+/* NASA POWER (hourly, last N years for performance) */
+async function fetchPowerHourly(lat, lon, param, years=15){
+  const now = new Date();
+  const end = todayYMD();
+  const startY = now.getUTCFullYear() - years;
+  const start = `${startY}0101`;
+  const url = `https://power.larc.nasa.gov/api/temporal/hourly/point?start=${start}&end=${end}&latitude=${lat}&longitude=${lon}&community=RE&parameters=${param}&format=JSON`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('POWER hourly fetch failed.');
+  const j = await r.json();
+  return j.properties.parameter[param]; // map of keys -> value
+}
+
+/* Window filters */
+function windowValuesDaily(map, targetDate, w=14){
+  const center = doy(targetDate);
+  const vals = [];
+  for (const k in map){
+    const dn = doy(toDateYMD(k));
+    if (!inWindow(dn, center, w)) continue;
+    const v = Number(map[k]);
+    if (!Number.isNaN(v)) vals.push(v);
+  }
+  return vals;
+}
+function parseHourlyKeyDate(key){
+  // Handles "YYYYMMDD:HH" or "YYYYMMDD:HHZ" or "YYYYMMDDHH"
+  const d = key.slice(0,8);
+  return toDateYMD(d);
+}
+function parseHourlyKeyHour(key){
+  const m = key.match(/:(\d{2})/);
+  if (m) return Number(m[1]);
+  // fallback: last 2 digits
+  return Number(key.slice(-2));
+}
+function windowValuesHourly(map, targetDate, hour, w=14){
+  const center = doy(targetDate);
+  const vals = [];
+  for (const k in map){
+    const dn = doy(parseHourlyKeyDate(k));
+    if (!inWindow(dn, center, w)) continue;
+    const hh = parseHourlyKeyHour(k);
+    if (hh !== hour) continue;
+    const v = Number(map[k]);
+    if (!Number.isNaN(v)) vals.push(v);
+  }
+  return vals;
+}
+
+/* Render helpers */
+function statLine(emoji, label, pct){
+  const p = Math.max(0, Math.min(100, +pct || 0));
+  const cls = p>=50 ? 'bad' : (p>=20 ? 'warn' : 'ok');
+  return `
+    <div class="stat">
+      <div><span class="emoji">${emoji}</span>${label}</div>
+      <div class="badge ${cls}">${p.toFixed(1)}%</div>
+      <div class="bar" style="grid-column: 1 / span 2"><div style="width:${p}%;"></div></div>
+    </div>`;
+}
+function keyVal(emoji, label, val, unit=''){
+  return `<div class="stat"><div><span class="emoji">${emoji}</span>${label}</div><div class="badge">${val}${unit}</div></div>`;
+}
+
+/* ---------- State ---------- */
+let state = { place:null, dateStr:null, hourStr:null, lat:null, lon:null, daily:null };
+
+/* Keep hour pill in sync */
+document.getElementById('time').addEventListener('input', e=>{
+  const v = e.target.value;
+  state.hourStr = v;
+  document.getElementById('hourTag').textContent = v ? `Hour for UV: ${v}` : 'Hour for UV: not set';
+});
+
+/* ---------- Continue ---------- */
+document.getElementById('continue').addEventListener('click', async ()=>{
+  const place = document.getElementById('place').value.trim();
+  const dateStr = document.getElementById('date').value.trim(); // flatpickr value (YYYY-MM-DD)
+  const hourStr = document.getElementById('time').value.trim(); // HH:MM (for UV)
+
+  if (!place || !dateStr){
+    statusEl.innerHTML = '<span class="spinner"></span> Please enter both location and date.';
+    return;
+  }
+  try{
+    statusEl.innerHTML = '<span class="spinner"></span> Geocoding…';
+    const g = await geocode(place);
+    statusEl.innerHTML = '<span class="spinner"></span> Fetching NASA POWER data…';
+    const daily = await fetchPowerDaily(g.lat, g.lon);
+
+    state = { place: g.label, dateStr, hourStr, lat: g.lat, lon: g.lon, daily };
+    document.getElementById('menuCard').style.display = 'block';
+    output.style.display = 'none';
+    metaTag.textContent = `${g.label} • ${dateStr}`;
+    hourTag.textContent = hourStr ? `Hour for UV: ${hourStr}` : 'Hour for UV: not set';
+    apiTag.textContent  = 'POWER daily dataset';
+    statusEl.innerHTML = '<span class="spinner"></span> Ready. Pick a menu item below.';
+  }catch(err){
+    statusEl.innerHTML = 'Error: ' + (err.message || err);
+  }
+});
+
+/* ---------- Menu: Coordinates ---------- */
+document.getElementById('m1').addEventListener('click', ()=>{
+  if (!state.lat) return;
+  output.style.display = 'block';
+  outBox.innerHTML =
+`${keyVal('📍','Location', state.place, '')}
+${keyVal('🧭','Latitude', state.lat.toFixed(5), '')}
+${keyVal('🧭','Longitude', state.lon.toFixed(5), '')}`;
+});
+
+/* ---------- Menu: Extreme Temperature (6 bins) ---------- */
+document.getElementById('m2').addEventListener('click', ()=>{
+  const d = state.daily?.data; if (!d) return;
+  const target = new Date(state.dateStr+'T00:00:00Z');
+
+  const tVals  = windowValuesDaily(d.T2M, target); // daily mean °C
+  const total  = tVals.length || 1;
+
+  const bins = [
+    {emoji:'🧊', name:'Extreme Cold', lo:-273, hi:-20},
+    {emoji:'🥶', name:'Cold',         lo:-20,  hi:10},
+    {emoji:'🙂', name:'Mild',         lo:10,   hi:20},
+    {emoji:'😎', name:'Warm',         lo:20,   hi:30},
+    {emoji:'🥵', name:'Hot',          lo:30,   hi:35},
+    {emoji:'🔥', name:'Extreme Heat', lo:35,   hi:1e9}
+  ];
+
+  const avg = tVals.length ? (tVals.reduce((a,b)=>a+b,0)/tVals.length) : NaN;
+
+  output.style.display = 'block';
+  outBox.innerHTML = bins.map(b=>{
+    const c = tVals.filter(v => v >= b.lo && v <= b.hi).length;
+    return statLine(b.emoji, b.name, 100*c/total);
+  }).join('') +
+  keyVal('🌡️','Mean temperature', Number.isNaN(avg)?'N/A':avg.toFixed(1), ' °C');
+});
+
+/* ---------- Menu: Precipitation Probability ---------- */
+document.getElementById('m3').addEventListener('click', ()=>{
+  const d = state.daily?.data; if (!d) return;
+  const target = new Date(state.dateStr+'T00:00:00Z');
+  const prVals = windowValuesDaily(d.PRECTOTCORR, target);
+  const total = prVals.length || 1;
+
+  const bins = [
+    {emoji:'☀️', name:'No Rain',       lo:0.0,   hi:0.1},
+    {emoji:'🌦️', name:'Light Rain',    lo:0.1,   hi:2.5},
+    {emoji:'🌧️', name:'Moderate Rain', lo:2.6,   hi:7.5},
+    {emoji:'⛈️', name:'Heavy Rain',    lo:7.6,   hi:50},
+    {emoji:'🌊', name:'Extreme Rain',  lo:50,    hi:1e9},
+  ];
+  output.style.display = 'block';
+  outBox.innerHTML = bins.map(b=>{
+    const c = prVals.filter(v => v >= b.lo && v <= b.hi).length;
+    return statLine(b.emoji, b.name, 100*c/total);
+  }).join('');
+});
+
+/* ---------- Menu: UV Index (uses HOURLY + selected hour) ---------- */
+document.getElementById('m4').addEventListener('click', async ()=>{
+  if (!state.lat) return;
+  const hourStr = (state.hourStr || '').trim();
+  if (!/^\d{1,2}:\d{2}$/.test(hourStr)){ alert('Please set the hour (HH:MM) in the form above.'); return; }
+  const hh = Number(hourStr.split(':')[0]);
+  if (!(hh>=0 && hh<=23)){ alert('Hour must be 00–23.'); return; }
+
+  try{
+    output.style.display = 'block';
+    outBox.innerHTML = '⏳ Fetching hourly UV data…';
+    const uvMap = await fetchPowerHourly(state.lat, state.lon, 'ALLSKY_SFC_UV_INDEX', 15); // last 15 years
+    const target = new Date(state.dateStr+'T00:00:00Z');
+    const uvVals = windowValuesHourly(uvMap, target, hh);
+    const total = uvVals.length || 1;
+    const cats = [
+      {emoji:'🟢', name:'Low',       lo:0,  hi:2.9},
+      {emoji:'🟡', name:'Moderate',  lo:3,  hi:5.9},
+      {emoji:'🟠', name:'High',      lo:6,  hi:7.9},
+      {emoji:'🔴', name:'Very High', lo:8,  hi:10.9},
+      {emoji:'🟣', name:'Extreme',   lo:11, hi:1e9},
+    ];
+    const avg = uvVals.length ? (uvVals.reduce((a,b)=>a+b,0)/uvVals.length) : NaN;
+
+    outBox.innerHTML =
+      cats.map(c=>{
+        const count = uvVals.filter(v => v >= c.lo && v <= c.hi).length;
+        return statLine(c.emoji, `${c.name} (at ${String(hh).padStart(2,'0')}:00)`, 100*count/total);
+      }).join('') +
+      keyVal('🌞','Mean UV', Number.isNaN(avg)?'N/A':avg.toFixed(1), '');
+    apiTag.textContent = 'POWER hourly dataset';
+  }catch(err){
+    outBox.innerHTML = 'Error fetching hourly UV: ' + (err.message || err);
+  }
+});
+
+/* ---------- Menu: Wind Speed (5 bins) ---------- */
+document.getElementById('m5').addEventListener('click', ()=>{
+  const d = state.daily?.data; if (!d) return;
+  const target = new Date(state.dateStr+'T00:00:00Z');
+  const wVals = windowValuesDaily(d.WS10M, target);
+  const total = wVals.length || 1;
+  const bins = [
+    {emoji:'🪁', name:'Calm',         lo:0,  hi:3},
+    {emoji:'🍃', name:'Moderate',     lo:3,  hi:8},
+    {emoji:'💨', name:'Strong',       lo:8,  hi:14},
+    {emoji:'🌬️', name:'Very Strong', lo:14, hi:20},
+    {emoji:'🌪️', name:'Violent',     lo:20, hi:1e9},
+  ];
+  const mean = wVals.length ? (wVals.reduce((a,b)=>a+b,0)/wVals.length) : NaN;
+
+  output.style.display = 'block';
+  outBox.innerHTML =
+    bins.map(b=>{
+      const c = wVals.filter(v => v >= b.lo && v <= b.hi).length;
+      return statLine(b.emoji, b.name, 100*c/total);
+    }).join('') +
+    keyVal('🌬️','Mean wind', Number.isNaN(mean)?'N/A':mean.toFixed(1), ' m/s');
+});
+
+/* ---------- Menu: Exit ---------- */
+document.getElementById('m6').addEventListener('click', ()=>{
+  document.getElementById('menuCard').style.display='none';
+  output.style.display='none';
+  statusEl.innerHTML = '<span class="spinner"></span> Session cleared. Enter new location, date, and hour.';
+  document.getElementById('place').focus();
+});
+</script>
+</body>
+</html>
