@@ -22,9 +22,6 @@ def location():
     print("Latitude  =", getLoc.latitude)
     print("Longitude =", getLoc.longitude)
 
-    
-
-
 def date():
     date = input("Enter the date (YYY-MM-DD) :")
     if len(date) == 10 and date[4] == '-' and date[7] == '-':
@@ -33,7 +30,6 @@ def date():
         print("Warning: Date should be in YYYY-MM-DD format!")
     return date
   
-
 def extreme_temp(date, location, avg_temp):
     if avg_temp >= 35:
         return (f"Its very hot! ☀️ The average temp at {location} is {avg_temp}°C.")
@@ -41,8 +37,6 @@ def extreme_temp(date, location, avg_temp):
     elif avg_temp <= -5:
         return (f"Its very hot! 🥶 The average temp at {location} is {avg_temp}°C.")
     
-    
-
 #>>>>>>> b506a3cac7370cc8f86d18e6904606d217346444
 def precipitation_probability(date, location):
     probability_precipitation = (n/t) * 100 #just a formula, will change it later
@@ -103,7 +97,6 @@ def calculate_wind():
 
 def exit():
     return ("Thank you for using, will it rain on my parade!")
-
 
 
 choose_option = ""
