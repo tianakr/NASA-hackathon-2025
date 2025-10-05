@@ -58,8 +58,6 @@ def get_data_hourly(lat, lon, start_date, end_date, time, quantity):
     return list_values
 
 def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
-    print(values_list)
-
     # Create date range
     dates = pd.date_range(start=start_date, end=end_date, freq='D')
 
