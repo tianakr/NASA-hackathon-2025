@@ -1,6 +1,6 @@
 import time
 import os
-
+from geopy.geocoders import Nominatim
 
 def menu():
     return ("""Welcome to will it rain on my parade!
@@ -14,7 +14,7 @@ def menu():
             """)
 
 def location():
-    from geopy.geocoders import Nominatim
+    
   
     loc = Nominatim(user_agent="Geopy Library")
 
