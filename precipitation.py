@@ -2,6 +2,7 @@ import requests as req
 import json
 from datetime import datetime, timedelta
 
+day = 0
 
 user_lat = float(input("Enter latitude: "))
 user_lon = float(input("Enter longitude: "))
@@ -10,7 +11,7 @@ user_date = input("Enter date (YYYY-MM-DD): ")
 end_date = datetime.strptime(user_date, "%Y-%m-%d")
 start_date = end_date - timedelta(days=90)
 
-def get_precipitation_data(lat, lon, start_date, end_date, parameter = "PRECTOT"):
+def get_precipitation_data(lat, lon, start_date, end_date, parameter = "IMERG_PRECTOT"):
     start_date = datetime.strftime(start_date, "%Y%m%d")
     end_date = datetime.strftime(end_date, "%Y%m%d")
     
@@ -18,24 +19,24 @@ def get_precipitation_data(lat, lon, start_date, end_date, parameter = "PRECTOT"
 
     response = req.get(API_URL)
     data = response.json()
-    with open(f"{parameter}.json", "w+") as data_file:
+    with open(f"{parameter}.json", "w") as data_file:
         json.dump(data, data_file, indent=4)
-    """precipitation = data["properties"]["parameter"]["IMERG_PRECTOT"]
+    precipitation = data["properties"]["parameter"]["IMERG_PRECTOT"]
 
     precipitation = []
     for key, value in precipitation.data.items():
         # Example key: "20250901:14Z"
         if key.endswith(f"{day:02d}Z"):  # keep only data for that day
-            uv_values.append(value)
+            precipitation.append(value)
 
-    return precipitation"""
+    return precipitation
 
 
 precipitation = get_precipitation_data(user_lat, user_lon, start_date, end_date,"IMERG_PRECTOT")
 
-print(get_precipitation_data) #prints mm per day 90 days
+print(precipitation) #prints mm per day 90 days
 
-#add all elements from the list
+#add all elements from the list > mean
 
 #divide by 90
 
