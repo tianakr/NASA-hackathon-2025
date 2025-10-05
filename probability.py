@@ -44,7 +44,6 @@ def get_data_hourly(lat, lon, start_date, end_date, time, quantity):
 
 def forecast_quantity(start_date, end_date, target_date, values_list):
     dates = pd.date_range(start=start_date, end=end_date)
-    print(values_list)
     df = pd.DataFrame({
         "ds": dates,
         "y": values_list
@@ -70,12 +69,11 @@ def find_probability_range(dict_norm_dist):
     upper_limit = float(input("Enter the upper limit for the norm cdf: "))
     lower_limit = float(input("Enter the lower limit for the norm cdf: "))
     mu = float(dict_norm_dist["mean"].iloc[0])
-    
     sigma = float(((dict_norm_dist["upper"] - dict_norm_dist["lower"]) / 3.92).iloc[0])
-    print(mu)
-    print(sigma)
+    
     probability = (norm.cdf(upper_limit, mu, sigma) - norm.cdf(lower_limit, mu, sigma)) * 100
     print("probability is: ", probability)
+    
     return probability
 
 
@@ -84,7 +82,7 @@ user_lon = float(input("Enter longitude: "))
 target_date = datetime.strptime(input("Enter date (YYYY-MM-DD): "), "%Y-%m-%d")
 target_time = input("Enter time (HH:MM): ")
 end_date = target_date - timedelta(days=1)
-start_date = end_date - timedelta(days=90)
+start_date = end_date - timedelta(days=900)
 
 uv_values = get_data_hourly(user_lat, user_lon, start_date, end_date, target_time, "ALLSKY_SFC_UV_INDEX")
 
