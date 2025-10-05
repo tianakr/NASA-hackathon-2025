@@ -3,7 +3,7 @@ import json
 from datetime import datetime, date
 from geopy.geocoders import Nominatim
 import calendar
-
+import math
 
 # ---------- ASK LOCATION ----------
 
@@ -151,15 +151,20 @@ def temp_data(user_data):
         f"🗓️  Historical dates used: {', '.join(d.strftime('%Y-%m-%d') for d, _ in daily_means)}"
     )
 
-    if hot_count > cold_count and hot_count > 0:
-        headline = f"Its likely to be very hot! ☀️ Based on {n} past years for this date, {hot_pct}% were ≥ 35 °C."
-    elif cold_count > hot_count and cold_count > 0:
-        headline = f"Its very cold! 🥶 Based on {n} past years for this date, {cold_pct}% were ≤ -5 °C."
+    threshold = math.ceil(0.5 * n)  # at least 50% of the available years
+
+    if hot_count >= threshold and hot_count > cold_count:
+        return (
+            f"Its likely to be very hot! ☀️ Based on {n} past years for this date, "
+            f"{hot_pct}% were ≥ 35 °C."
+        )
+    elif cold_count >= threshold and cold_count > hot_count:
+        return (
+            f"Its very cold! 🥶 Based on {n} past years for this date, "
+            f"{cold_pct}% were ≤ -5 °C."
+        )
     else:
-        headline = f"The conditions look normal. Average daily mean is {avg_of_means} °C."
-
-    return headline + "\n" + "\n".join(lines)
-
+        return f"The conditions look normal. Average daily temp is {avg_of_means} °C."
 
 
 user_data = {
