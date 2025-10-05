@@ -29,7 +29,7 @@ print("End of day:", end)
 # -----------------------------
 # 4️⃣ Log in to NASA Earthdata
 # -----------------------------
-auth = earthaccess.login(username=EARTHDATA_USERNAME, password=EARTHDATA_PASSWORD)
+auth = earthaccess.login(EARTHDATA_USERNAME, EARTHDATA_PASSWORD)
 
 # -----------------------------
 # 5️⃣ Search for the UV dataset granules
