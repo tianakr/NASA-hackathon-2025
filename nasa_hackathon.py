@@ -58,6 +58,7 @@ def get_data_hourly(lat, lon, start_date, end_date, time, quantity):
     return list_values
 
 def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
+    print(values_list)
 
     # Create date range
     dates = pd.date_range(start=start_date, end=end_date, freq='D')
@@ -91,21 +92,27 @@ def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
     # Make predictions
     forecast = model.predict(future_df)
 
-    # Get predicted value for target date (last forecasted day)
-    predicted_value = forecast.iloc[-1]["yhat"]
-    print(f"\nPredicted {quantity} for {target_date.date()}: {predicted_value:.2f}")
+    # Get the forecast for the target date (last forecasted day)
+    last_row = forecast.iloc[-1]
+    predicted_value = last_row["yhat"]
+    lower_value = last_row["yhat_lower"]
+    upper_value = last_row["yhat_upper"]
+
+    print(f"\nPredicted UV index for {target_date.date()}: {predicted_value:.2f}")
+    print(f"Confidence interval: [{lower_value:.2f}, {upper_value:.2f}]")
 
     # Visualization
-    #model.plot(forecast)
-    #plt.title("UV Index Forecast with NASA Data")
-    #plt.xlabel("Date")
-    #plt.ylabel("UV Index")
-    #plt.show()
+    model.plot(forecast)
+    plt.title("UV Index Forecast with NASA Data")
+    plt.xlabel("Date")
+    plt.ylabel("UV Index")
+    plt.show()
 
+    # Return only one prediction (not lists)
     forecast_dict = {
-        "mean": forecast["yhat"].tolist(),
-        "lower": forecast["yhat_lower"].tolist(),
-        "upper": forecast["yhat_upper"].tolist()
+        "mean": predicted_value,
+        "lower": lower_value,
+        "upper": upper_value
     }
 
     return forecast_dict
@@ -113,8 +120,10 @@ def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
 def find_probability_range(dict_norm_dist, lower, upper):
     upper_limit = float(upper)
     lower_limit = float(lower)
-    mu = float(dict_norm_dist["mean"][0])
-    sigma = (dict_norm_dist["upper"][0] - dict_norm_dist["lower"][0]) / 3.92
+    mu = float(dict_norm_dist["mean"])
+    sigma = (dict_norm_dist["upper"] - dict_norm_dist["lower"]) / 3.92
+    print(dict_norm_dist)
+    print(mu, sigma)
     
     probability = (norm.cdf(upper_limit, mu, sigma) - norm.cdf(lower_limit, mu, sigma)) * 100
     print(f"probability is: {probability:.2f}%")
