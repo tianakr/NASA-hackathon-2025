@@ -299,7 +299,7 @@ def main():
             case 1:
                 print(coordinates[0], coordinates[1])
             case 2:
-                temp_probability
+                temp_probability(coordinates, date)
             case 3:
                 precipitation_probability(coordinates, date)
             case 4:
