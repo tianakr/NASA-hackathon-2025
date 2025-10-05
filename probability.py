@@ -84,7 +84,7 @@ user_lon = float(input("Enter longitude: "))
 target_date = datetime.strptime(input("Enter date (YYYY-MM-DD): "), "%Y-%m-%d")
 target_time = input("Enter time (HH:MM): ")
 end_date = target_date - timedelta(days=1)
-start_date = end_date - timedelta(days=)
+start_date = end_date - timedelta(days=90)
 
 uv_values = get_data_hourly(user_lat, user_lon, start_date, end_date, target_time, "ALLSKY_SFC_UV_INDEX")
 
