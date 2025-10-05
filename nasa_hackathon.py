@@ -98,14 +98,14 @@ def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
     lower_value = last_row["yhat_lower"]
     upper_value = last_row["yhat_upper"]
 
-    print(f"\nPredicted UV index for {target_date.date()}: {predicted_value:.2f}")
+    print(f"\nPredicted {quantity} for {target_date.date()}: {predicted_value:.2f}")
     print(f"Confidence interval: [{lower_value:.2f}, {upper_value:.2f}]")
 
     # Visualization
     model.plot(forecast)
-    plt.title("UV Index Forecast with NASA Data")
+    plt.title(f"{quantity} Forecast with NASA Data")
     plt.xlabel("Date")
-    plt.ylabel("UV Index")
+    plt.ylabel(f"{quantity}")
     plt.show()
 
     # Return only one prediction (not lists)
