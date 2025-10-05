@@ -36,13 +36,27 @@ precipitation = get_precipitation_data(user_lat, user_lon, start_date, end_date,
 
 print(precipitation) #prints mm per day 90 days
 
-#add all elements from the list > mean
+#classifying percipitation based on index
 
-#divide by 90
+percipitation_values = []
+percipitation_values.append(precipitation)
 
-#average precipitation during 3 months
-
-#
+for i in percipitation_values:
+    match i:
+        case x if x >=3:
+            print("Extremely wet")
+        case x if 2 <= x <3 :
+            print("Very wet")
+        case x if 1 <= x < 2:
+            print("Moderately wet")
+        case x if 0.5 <= x < 1.0:
+            print("Near normal")
+        case x if -1.5 <= x < 0.5:
+            print("Moderately dry")
+        case x if -2.5 <= x < -1.5:
+            print("Severely dry")
+        case x if x < -2.5:
+            print("Extremely dry")
 
 """def fetch_data(lat, lon, start_date, end_date, parameter):
     API_URL = f"https://power.larc.nasa.gov/api/temporal/daily/point?start={start_date}&end={end_date}&latitude={lat}&longitude={lon}&community=RE&parameters={parameter}&time-standard=LST&format=JSON"
