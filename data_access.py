@@ -9,16 +9,16 @@ user_date = input("Enter date (YYYY-MM-DD): ")
 end_date = datetime.strptime(user_date, "%Y-%m-%d")
 start_date = end_date - timedelta(days=90)
 
-def get_data(lat, lon, start_date, end_date, parameter):
+def get_data(lat, lon, start_date, end_date, quantity):
     start_date = datetime.strftime(start_date, "%Y%m%d")
     end_date = datetime.strftime(end_date, "%Y%m%d")
     list_values = []
 
-    API_URL = f"https://power.larc.nasa.gov/api/temporal/daily/point?start={start_date}&end={end_date}&latitude=10&longitude=10&community=re&parameters={parameter}&format=json&units=metric&header=true"
+    API_URL = f"https://power.larc.nasa.gov/api/temporal/daily/point?start={start_date}&end={end_date}&latitude=10&longitude=10&community=re&parameters={quantity}&format=json&units=metric&header=true"
 
     response = req.get(API_URL)
     data_frame = response.json()
-    data = data_frame["properties"]["parameter"][parameter]
+    data = data_frame["properties"]["parameter"][quantity]
     
     for value in data.values():
         list_values.append(value)
