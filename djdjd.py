@@ -3,7 +3,7 @@ from datetime import datetime
 
 def get_uv_index(lat, lon, date_str):
     """
-    Get daily UV index using NASA POWER API (ALLSKY_UV_INDEX).
+    Get the daily UV index for a given location and date using NASA POWER API.
 
     Args:
         lat (float): Latitude
@@ -25,9 +25,8 @@ def get_uv_index(lat, lon, date_str):
     )
 
     response = requests.get(url)
-    
     if response.status_code != 200:
-        print("Error fetching data from NASA POWER API")
+        print("Error: Could not fetch data from NASA POWER API.")
         return None
 
     data = response.json()
@@ -43,9 +42,16 @@ def get_uv_index(lat, lon, date_str):
 # -----------------------------
 # Example usage
 # -----------------------------
-lat, lon = 25.276987, 55.296249  # Dubai, UAE (low latitude, more likely to have UV)
-date = "2020-06-21"               # Summer date
 
-uv = get_uv_index(lat, lon, date)
-if uv is not None:
-    print(f"UV Index on {date} at ({lat}, {lon}): {uv}")
+# You can iterate over 10 dates if needed
+dates = [
+    "2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04", "2025-06-05",
+    "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09", "2025-06-10"
+]
+
+lat, lon = 25.276987, 55.296249  # Dubai, UAE (works reliably for UV)
+
+for date in dates:
+    uv = get_uv_index(lat, lon, date)
+    if uv is not None:
+        print(f"UV Index on {date} at ({lat}, {lon}): {uv}")
