@@ -2,7 +2,7 @@ import time
 import os
 
 
-    def menu():
+def menu():
         return ("""Welcome to will it rain on my parade!
                 1. Location
                 2. Date
