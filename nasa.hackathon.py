@@ -14,8 +14,6 @@ def menu():
             """)
 
 def location():
-    
-  
     loc = Nominatim(user_agent="Geopy Library")
 
     getLoc = loc.geocode(input("Enter your address: "))
