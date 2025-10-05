@@ -31,7 +31,7 @@ def get_data_daily(lat, lon, start_date, end_date, quantity):
     end_date = datetime.strftime(end_date, "%Y%m%d")
     list_values = []
 
-    API_URL = f"https://power.larc.nasa.gov/api/temporal/daily/point?start={start_date}&end={end_date}&latitude=10&longitude=10&community=re&parameters={quantity}&format=json&units=metric&header=true"
+    API_URL = f"https://power.larc.nasa.gov/api/temporal/daily/point?start={start_date}&end={end_date}&latitude={lat}&longitude={lon}&community=re&parameters={quantity}&format=json&units=metric&header=true"
 
     response = req.get(API_URL)
     data = response.json()
@@ -47,7 +47,7 @@ def get_data_hourly(lat, lon, start_date, end_date, time, quantity):
     hour = int(time.split(":")[0])
     list_values = []
 
-    API_URL = f"https://power.larc.nasa.gov/api/temporal/hourly/point?start={start_date}&end={end_date}&latitude=10&longitude=10&community=re&parameters={quantity}&format=json&units=metric&header=true"
+    API_URL = f"https://power.larc.nasa.gov/api/temporal/hourly/point?start={start_date}&end={end_date}&latitude={lat}&longitude={lon}&community=re&parameters={quantity}&format=json&units=metric&header=true"
 
     response = req.get(API_URL)
     data = response.json()
