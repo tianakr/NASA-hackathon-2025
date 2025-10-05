@@ -2,7 +2,6 @@ import requests as req
 import json
 from datetime import datetime, timedelta, date
 from geopy.geocoders import Nominatim
-from timezonefinder import TimezoneFinder
 import calendar
 
 
