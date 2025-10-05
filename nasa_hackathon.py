@@ -1,6 +1,5 @@
 from geopy.geocoders import Nominatim
 import requests as req
-import json
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 import pandas as pd
