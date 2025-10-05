@@ -1,0 +1,11 @@
+Challenge: Will it Rain on My Parade?
+After reading the challenge description, we decided to create an app that asks users for a location and date, then retrieves weather data for a period of time before that date. 
+The user can choose a specific weather parameter (wind, rain, UV, or temperature) and then select from several value ranges for that parameter. 
+The app calculates the probability of the chosen range occurring on the selected day.
+In our final Python program, the user inputs a date, time (depending on the parameter), and location, which are used to build a NASA API URL. 
+This URL retrieves daily or hourly weather data for about five years before the target date. 
+We then use the Prophet library to build a regression model that predicts the parameter’s value on the target date. 
+The model also provides an 80% confidence interval with upper and lower values.
+Assuming the predicted values follow a normal distribution, we use the confidence interval to find the standard deviation. 
+With the mean (predicted value) and standard deviation, we calculate the probability that the actual value falls within the user’s selected range using the cumulative distribution function for normal distributions.
+Hourly data is used for UV, temperature, and wind since these parameters show large variations through the day, while daily data is used for precipitation because it is the total precipitation through the day.
