@@ -25,6 +25,7 @@ def get_data(lat, lon, start_date, end_date, parameter):
     return list_values
 
 uv_values = get_data(user_lat, user_lon, start_date, end_date, "ALLSKY_SFC_UV_INDEX")
+print(uv_values)
 
 plt.plot(uv_values)
 plt.show()

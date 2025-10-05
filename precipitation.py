@@ -33,7 +33,16 @@ def get_precipitation_data(lat, lon, start_date, end_date, parameter = "PRECTOT"
 
 precipitation = get_precipitation_data(user_lat, user_lon, start_date, end_date,"IMERG_PRECTOT")
 
-print(get_precipitation_data)
+print(get_precipitation_data) #prints mm per day 90 days
+
+#add all elements from the list
+
+#divide by 90
+
+#average precipitation during 3 months
+
+#
+
 """def fetch_data(lat, lon, start_date, end_date, parameter):
     API_URL = f"https://power.larc.nasa.gov/api/temporal/daily/point?start={start_date}&end={end_date}&latitude={lat}&longitude={lon}&community=RE&parameters={parameter}&time-standard=LST&format=JSON"
     response = req.get(API_URL)
