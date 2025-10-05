@@ -1,43 +1,40 @@
-import earthaccess
+import requests
 from datetime import datetime
-EARTHDATA_USERNAME = "nasaspaceapps1"
-EARTHDATA_PASSWORD = "My_strongPwd#2025"
 
-def get_start_end_of_day(user_input):
+def get_uv_index(lat, lon, date_str):
     """
-    Takes a datetime string and returns the start and end of that day.
-
-    Args:
-        user_input (str): Date/time in format "YYYY-MM-DD HH:MM"
-
-    Returns:
-        tuple: (start_of_day, end_of_day)
+    Get UV index for a location (lat, lon) and date (YYYY-MM-DD).
     """
-    dt = datetime.strptime(user_input, "%Y-%m-%d %H:%M")
-    start_of_day = dt.replace(hour=0, minute=0, second=0)
-    end_of_day = dt.replace(hour=23, minute=59, second=59)
-    return start_of_day, end_of_day
+    # Convert date to API format
+    date_api = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y%m%d")
 
-start, end = get_start_end_of_day("2025-10-04 14:30")
-
-print("Start of day:", start)
-print("End of day:", end)
-
-
-
-results = earthaccess.search_datasets(
-    keyword = "OMUVBd_003",
-    bounding_box = (-10, 20, 10, 50),
-    temporal = ("2018-02-01", "2018-02-01"),
-    count = 1
+    # NASA POWER API URL
+    url = (
+        f"https://power.larc.nasa.gov/api/temporal/daily/point?"
+        f"parameters=ALLSKY_UV_INDEX&community=RE"
+        f"&latitude={lat}&longitude={lon}"
+        f"&start={date_api}&end={date_api}&format=JSON"
     )
 
-print(results)
+    response = requests.get(url)
 
+    if response.status_code != 200:
+        print(f"Error fetching data: HTTP {response.status_code}")
+        return None
 
+    data = response.json()
 
+    try:
+        uv_index = data["properties"]["parameter"]["ALLSKY_UV_INDEX"][date_api]
+        return uv_index
+    except KeyError:
+        print("UV index data not available for this date/location.")
+        return None
 
+# Example usage:
+lat, lon = 59.33, 18.06  # Stockholm, Sweden
+date = "2023-06-21"       # Past date
+uv = get_uv_index(lat, lon, date)
 
-#How to use 
-
-
+if uv is not None:
+    print(f"UV Index on {date} at ({lat}, {lon}): {uv}")
