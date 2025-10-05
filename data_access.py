@@ -19,9 +19,6 @@ def get_data(lat, lon, start_date, end_date, parameter):
     response = req.get(API_URL)
     data_frame = response.json()
     data = data_frame["properties"]["parameter"][parameter]
-
-    """with open(f"{parameter}.json", "w+") as data_file:
-        json.dump(data, data_file, indent=4)"""
     
     for value in data.values():
         list_values.append(value)
