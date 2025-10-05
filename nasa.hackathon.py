@@ -1,6 +1,5 @@
 import time
 import os
-import earthaccess
 
 
 def menu():
@@ -15,37 +14,34 @@ def menu():
             """)
 
 def location():
-    lat = float(input("Enter latitude (e.g., 34.05): "))   #Decide later which one
-    lon = float(input("Enter longitude (e.g., -118.25): "))
-    if -90 <= lat <= 90 and -180 <= lon <= 180:
-        print(f"Location set to: Latitude {lat}, Longitude {lon}")
-    else:
-        print("Warning: Latitude must be -90 to 90 and Longitude must be -180 to 180!")
+    from geopy.geocoders import Nominatim
+  
+    loc = Nominatim(user_agent="Geopy Library")
 
-    return (lat, lon)
+    getLoc = loc.geocode(input("Enter your address: "))
+
+    print(getLoc.address)
+    print("Latitude  =", getLoc.latitude)
+    print("Longitude =", getLoc.longitude)
+
+    
 
 
 def date():
     date = input("Enter the date (YYY-MM-DD) :")
     if len(date) == 10 and date[4] == '-' and date[7] == '-':
         print(f"Date set to: {date}")
-        return date
     else:
         print("Warning: Date should be in YYYY-MM-DD format!")
-
+    return date
   
 
-#<<<<<<< HEAD
-
-#=======
 def extreme_temp(date, location, avg_temp):
     if avg_temp >= 35:
         return (f"Its very hot! ☀️ The average temp at {location} is {avg_temp}°C.")
     
     elif avg_temp <= -5:
         return (f"Its very hot! 🥶 The average temp at {location} is {avg_temp}°C.")
-    else:
-        return (f"The conditions at {location} are normal, the temp is {avg_temp}°C.")
     
     
 
@@ -118,19 +114,19 @@ while choose_option != "7":
     print(menu())
     choose_option = input("Choose your option (1-7): ")
 
-if choose_option == "1":
-    location = location()
-elif choose_option == "2":
-    date = date()
-elif choose_option == "3":
-    print(extreme_temp(date, location, avg_temp))
-elif choose_option == "4":
-    precipitation_probability(date, location)
-elif choose_option == "5":
-    uv_index()
-elif choose_option == "6":
-    calculate_wind()   
-elif choose_option == "7":
-    print(exit())
-else:
-    print("Invalid choice. Try again!")
+    if choose_option == "1":
+        coords = location()
+    elif choose_option == "2":
+        date = date()
+    elif choose_option == "3":
+        print(extreme_temp(date, location, avg_temp))
+    elif choose_option == "4":
+        precipitation_probability(date, location)
+    elif choose_option == "5":
+        uv_index()
+    elif choose_option == "6":
+        calculate_wind()   
+    elif choose_option == "7":
+        print(exit())
+    else:
+        print("Invalid choice. Try again!")

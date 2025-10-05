@@ -1,0 +1,65 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      11.967,
+      57.707,
+      38.77
+    ]
+  },
+  "properties": {
+    "parameter": {
+      "PRECTOTCORR": {
+        "20250913": 7.72,
+        "20250914": 16.59,
+        "20250915": 12.91,
+        "20250916": 19.28,
+        "20250917": 4.12,
+        "20250918": 2.36,
+        "20250919": 0.6,
+        "20250920": 0.43,
+        "20250921": 3.7,
+        "20250922": 0.26,
+        "20250923": 0.0,
+        "20250924": 0.0,
+        "20250925": 0.0,
+        "20250926": 0.0,
+        "20250927": 0.02,
+        "20250928": 0.03,
+        "20250929": 1.17,
+        "20250930": 1.06,
+        "20251001": 0.52,
+        "20251002": 0.72,
+        "20251003": -999.0,
+        "20251004": -999.0,
+        "20251005": -999.0
+      }
+    }
+  },
+  "header": {
+    "title": "NASA/POWER Source Native Resolution Daily Data",
+    "api": {
+      "version": "v2.8.0",
+      "name": "POWER Daily API"
+    },
+    "sources": [
+      "GEOSIT"
+    ],
+    "fill_value": -999.0,
+    "time_standard": "LST",
+    "start": "20250913",
+    "end": "20251005"
+  },
+  "messages": [],
+  "parameters": {
+    "PRECTOTCORR": {
+      "units": "mm/day",
+      "longname": "Precipitation Corrected"
+    }
+  },
+  "times": {
+    "data": 0.72,
+    "process": 0.03
+  }
+}
