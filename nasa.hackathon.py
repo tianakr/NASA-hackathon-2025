@@ -16,7 +16,7 @@ def menu():
             7. Exit
             """)
 
-def location():
+def main_location():
     loc = Nominatim(user_agent="Geopy Library")
 
     getLoc = loc.geocode(input("Enter your address: "))
@@ -25,7 +25,7 @@ def location():
     print("Latitude  =", getLoc.latitude)
     print("Longitude =", getLoc.longitude)
 
-def date():
+def main_date():
     date = input("Enter the date (YYY-MM-DD) :")
     if len(date) == 10 and date[4] == '-' and date[7] == '-':
         print(f"Date set to: {date}")
@@ -283,13 +283,13 @@ while choose_option != "7":
     choose_option = input("Choose your option (1-7): ")
 
     if choose_option == "1":
-        coords = location()
+        user_coords = main_location()
     elif choose_option == "2":
-        date = date()
+        user_date = main_date()
     elif choose_option == "3":
         extreme_temp()
     elif choose_option == "4":
-        precipitation_probability(date, location)
+        precipitation_probability(user_date, user_coords)
     elif choose_option == "5":
         uv_index()
     elif choose_option == "6":
