@@ -105,7 +105,9 @@ def forecast_quantity(start_date, end_date, target_date, values_list, quantity):
     plt.title(f"{quantity} Forecast with NASA Data")
     plt.xlabel("Date")
     plt.ylabel(f"{quantity}")
-    plt.show()
+    plt.show(block=False)
+    plt.pause(5)
+    plt.close()
 
     # Return only one prediction (not lists)
     forecast_dict = {
@@ -121,8 +123,6 @@ def find_probability_range(dict_norm_dist, lower, upper):
     lower_limit = float(lower)
     mu = float(dict_norm_dist["mean"])
     sigma = (dict_norm_dist["upper"] - dict_norm_dist["lower"]) / 3.92
-    print(dict_norm_dist)
-    print(mu, sigma)
     
     probability = (norm.cdf(upper_limit, mu, sigma) - norm.cdf(lower_limit, mu, sigma)) * 100
     print(f"probability is: {probability:.2f}%")
@@ -140,7 +140,7 @@ def precipitation_probability(coordinates, date, quantity="PRECTOTCORR"):
     lon = coordinates[1]
     target_date = datetime.strptime(date, "%Y-%m-%d")
     end_date = target_date - timedelta(days=1)
-    start_date = end_date - timedelta(days=900)
+    start_date = end_date - timedelta(days=1780)
     lower = None
     upper = None
     
@@ -183,7 +183,7 @@ def uv_probability(coordinates, date, quantity="ALLSKY_SFC_UV_INDEX"):
     target_date = datetime.strptime(date, "%Y-%m-%d")
     target_time = input("Enter time (HH:MM): ")
     end_date = target_date - timedelta(days=1)
-    start_date = end_date - timedelta(days=900)
+    start_date = end_date - timedelta(days=1780)
     lower = None
     upper = None
     
@@ -227,7 +227,7 @@ def wind_probability(coordinates, date, quantity="WS2M"):
     target_date = datetime.strptime(date, "%Y-%m-%d")
     target_time = input("Enter time (HH:MM): ")
     end_date = target_date - timedelta(days=1)
-    start_date = end_date - timedelta(days=900)
+    start_date = end_date - timedelta(days=1780)
     lower = None
     upper = None
     
@@ -271,7 +271,7 @@ def temp_probability(coordinates, date, quantity="T2M"):
     target_date = datetime.strptime(date, "%Y-%m-%d")
     target_time = input("Enter time (HH:MM): ")
     end_date = target_date - timedelta(days=1)
-    start_date = end_date - timedelta(days=900)
+    start_date = end_date - timedelta(days=1780)
     lower = None
     upper = None
     
@@ -307,7 +307,7 @@ def temp_probability(coordinates, date, quantity="T2M"):
 
 def main():
     menu_text = """Will it rain on my parade!
-    1. Coordinates
+    1. Enter New Date and Location
     2. Temperature Probability
     3. Precipitation Probability
     4. UV Index
@@ -323,6 +323,8 @@ def main():
 
         match user_choice:
             case 1:
+                coordinates = main_location()
+                date = main_date()
                 print(coordinates[0], coordinates[1])
             case 2:
                 temp_probability(coordinates, date)
